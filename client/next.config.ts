@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  reactStrictMode: false, // 👈 This disables double invocation in dev
 };
 
 export default nextConfig;

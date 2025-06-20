@@ -5,7 +5,6 @@ def scrape_leetcode(link: str):
         username = link.strip("/").split("/")[-1]
         graphql_url = "https://leetcode.com/graphql"
 
-        # Main query
         profile_query = """
         query getUserProfile($username: String!) {
           allQuestionsCount {
@@ -49,10 +48,6 @@ def scrape_leetcode(link: str):
               }
             }
 
-            userCalendar {
-              streak
-              totalActiveDays
-            }
           }
 
           userContestRanking(username: $username) {
@@ -81,39 +76,17 @@ def scrape_leetcode(link: str):
             headers={"Content-Type": "application/json"}
         )
 
+        profile_json = profile_response.json()
+        print("Profile response:", profile_json)
+
         if profile_response.status_code != 200:
             return {"error": "Failed to fetch profile data from LeetCode"}
 
-        profile_data = profile_response.json()["data"]
+        profile_data = profile_json.get("data")
 
         matched = profile_data["matchedUser"]
-        stats = matched["submitStats"]["acSubmissionNum"]
-
-        # Recent submissions query
-        submissions_query = """
-        query recentSubmissions($username: String!) {
-          recentSubmissionList(username: $username, limit: 5) {
-            title
-            titleSlug
-            statusDisplay
-            lang
-            time
-          }
-        }
-        """
-
-        submissions_vars = {"username": username}
-
-        submissions_response = requests.post(
-            graphql_url,
-            json={"query": submissions_query, "variables": submissions_vars},
-            headers={"Content-Type": "application/json"}
-        )
-
-        if submissions_response.status_code != 200:
-            return {"error": "Failed to fetch recent submissions"}
-
-        recent_submissions = submissions_response.json()["data"]["recentSubmissionList"]
+        
+        stats = matched.get("submitStats", {}).get("acSubmissionNum", [])
 
         result = {
             "username": matched.get("username"),
@@ -131,7 +104,6 @@ def scrape_leetcode(link: str):
             "totalActiveDays": matched.get("userCalendar", {}).get("totalActiveDays", 0),
             "contestStats": profile_data.get("userContestRanking", {}),
             "beatsPercentage": profile_data.get("userProfileUserQuestionProgressV2", {}),
-            "recentSubmissions": recent_submissions
         }
 
         return result

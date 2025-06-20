@@ -1,75 +1,31 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import LeetCode from "./leetcode";
+import CodeForces from "./codeforces";
 
 interface FetchedDataProps {
   link: string;
 }
 
 const FetchedData: React.FC<FetchedDataProps> = ({ link }) => {
-  const [data, setData] = useState<any>(null);
-  const [error, setError] = useState<string>("");
+  const [platform, setPlatform] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (!link) return;
-
-        const response = await axios.post("http://localhost:8000/api/fetch-stats", {
-          links: [link],
-        });
-
-        const result = response.data[0]; // Because we sent one link
-        if (result.stats?.error) {
-          setError(result.stats.error);
-        } else {
-          setData(result);
-        }
-      } catch (err: any) {
-        console.error(err);
-        setError("Failed to fetch data");
-      }
-    };
-
-    fetchData();
+    if (link.includes("leetcode")) {
+      setPlatform("leetcode");
+    } else if (link.includes("codeforces")) {
+      setPlatform("codeforces");
+    } else {
+      setPlatform(null);
+    }
   }, [link]);
 
-  if (error) return <p className="text-red-500">❌ {error}</p>;
-  if (!data) return <p>Loading data for <strong>{link}</strong>...</p>;
-
-  const { platform, stats } = data;
+  if (!platform) return null;
 
   return (
-    <div className="p-4 bg-white rounded-xl shadow-md space-y-1 border border-gray-200">
-      <p className="font-bold text-lg capitalize">{platform} Stats</p>
-      {platform === "leetcode" && (
-        <>
-          <p>👤 Username: {stats.username}</p>
-          <p>✅ Solved: {stats.total_problems_solved} | 🟢 Easy: {stats.easy} | 🟠 Medium: {stats.medium} | 🔴 Hard: {stats.hard}</p>
-          <p>🔥 Streak: {stats.streak} days | 📅 Active Days: {stats.totalActiveDays}</p>
-          <p>🏅 Ranking: {stats.ranking}</p>
-          <p>💡 Skill Tags: {stats.skillTags?.join(", ") || "N/A"}</p>
-        </>
-      )}
-      {platform === "codeforces" && (
-        <>
-          <p>👤 Handle: {stats.handle}</p>
-          <p>🏆 Rating: {stats.rating} ({stats.rank})</p>
-          <p>📈 Max Rating: {stats.maxRating} ({stats.maxRank})</p>
-          <p>🧪 Total Contests: {stats.contests.totalContests}</p>
-          {stats.recentSubmissions && stats.recentSubmissions.length > 0 && (
-            <div>
-              <p>📝 Recent Submission:</p>
-              <ul className="list-disc pl-5">
-                {stats.recentSubmissions.slice(0, 5).map((s: any, index: number) => (
-                  <li key={index}>
-                    {s.problem} - {s.verdict} ({s.language})
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </>
-      )}
+    <div className="p-8 bg-[#282828] rounded-xl shadow-lg space-y-1 border border-[#282828] text-white">
+      <p className="font-bold text-lg capitalize text-[30px] mb-10 text-center">{platform} Stats</p>
+      {platform === "leetcode" && <LeetCode link={link} />}
+      {platform === "codeforces" && <CodeForces link={link}/>}
     </div>
   );
 };

@@ -46,3 +46,7 @@ body {
       scrollbar-width: thin;
       scrollbar-color: #444 #121212;
 }
+
+.recharts-pie-sector:focus {
+  outline: none;
+}

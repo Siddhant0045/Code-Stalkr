@@ -25,7 +25,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-[#1a1a1a]">
       {/* Header */}
       <header className="flex items-center justify-between px-8 py-4 bg-white shadow">
         <div className="text-2xl font-bold text-blue-600">CodeStalkr</div>
@@ -35,7 +35,7 @@ export default function Dashboard() {
       </header>
 
       {/* Main Section */}
-      <main className="flex flex-col items-center justify-center py-20 px-20">
+      <main className="flex flex-col items-center justify-center py-20 px-15">
         {/* Intro */}
         <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 text-center mb-4">
           Track, Compare, and Level Up Your Coding Journey.
@@ -45,7 +45,7 @@ export default function Dashboard() {
         </p>
 
         {/* Inputs Row */}
-        <div className="flex flex-wrap gap-4 items-center justify-center w-full mb-6">
+        <div className={`flex flex-wrap items-center justify-center w-full mb-6 ${links.length === 3 ? "gap-4" : links.length === 2 ? "gap-8" : "gap-12"}`}>
           {links.map((link, index) => (
             <input
               key={index}
@@ -53,7 +53,7 @@ export default function Dashboard() {
               value={link}
               onChange={(e) => handleChange(index, e.target.value)}
               placeholder="Paste your link here"
-              className="w-[300px] px-4 py-2 rounded border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-[300px] px-4 py-2 rounded border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
             />
           ))}
         </div>
@@ -78,16 +78,11 @@ export default function Dashboard() {
 
         {/* Stats Section */}
         {showStats && (
-          <div className="flex flex-wrap justify-center gap-4 w-full max-w-6xl">
+          <div className={`flex justify-center w-full ${links.length === 3 ? "gap-4" : links.length === 2 ? "gap-8" : "gap-12"}`}>
             {links.map((link, index) => (
               <div
                 key={index}
-                className={`bg-white shadow rounded p-4 text-gray-800 text-sm ${links.length === 1
-                    ? "w-[700px]"
-                    : links.length === 2
-                      ? "w-[450px]"
-                      : "w-[350px]"
-                  }`}
+                className={`shadow rounded text-gray-800 text-sm ${links.length === 1 ? "w-[700px]" :  "w-[600px]" }`}
               >
                 <FetchedData link={link} />
               </div>
